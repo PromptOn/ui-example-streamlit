@@ -2,6 +2,7 @@ import streamlit as st
 
 import auth
 import header
+import prompt_selector
 
 
 if auth.login():
@@ -9,12 +10,11 @@ if auth.login():
 
     prompton = auth.get_prompton()
 
-    st.write("## My Prompts")
-    with st.spinner("Loading prompts..."):
-        my_prompts = prompton.prompts.get_prompts_list()
-        st.write(my_prompts)
+    prompt, prompt_version = prompt_selector.select_prompt_version()
 
-    st.write("## My Prompt Versions")
-    with st.spinner("Loading versions..."):
-        my_prompt_versions = prompton.prompt_versions.get_prompt_versions_list()
-        st.write(my_prompt_versions)
+    if prompt_version and prompt_version.id:
+        inferences = prompton.inferences.get_inferences_list(
+            prompt_version_id=prompt_version.id
+        )
+        st.write("## Inferences")
+        st.write(inferences)
