@@ -18,6 +18,14 @@ def select_prompt_version() -> (
             "Prompt", my_prompts, format_func=lambda o: o.name
         )
 
+        def format_prompt_version_fn(o: prompton_types.PromptVersionRead):
+            pv_string = f"{o.name} - {o.status.value if o.status else ''} "
+            if o.model_config:
+                pv_string += (
+                    f" - {o.model_config.model} - temp: {o.model_config.temperature}"
+                )
+            return pv_string
+
         if selected_prompt and selected_prompt.id:
             with st.spinner("Loading versions..."):
                 my_prompt_versions = prompton.prompt_versions.get_prompt_versions_list(
@@ -26,7 +34,7 @@ def select_prompt_version() -> (
                 selected_pv = col2.selectbox(
                     "version",
                     my_prompt_versions,
-                    format_func=lambda o: o.name + " (" + o.status + ")",
+                    format_func=format_prompt_version_fn,
                 )
 
                 return selected_prompt, selected_pv
