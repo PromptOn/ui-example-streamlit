@@ -1,10 +1,17 @@
 import streamlit as st
 import auth
+from streamlit_option_menu import option_menu
+
+
+def show():
+    st.set_page_config(layout="wide", page_title="Prompton API Example")
+
+    show_header()
+    show_sidebar()
 
 
 def show_header():
     if st.session_state["auth_token"]:
-        st.set_page_config(layout="wide", page_title="Prompton API Example")
         prompton = auth.get_prompton()
 
         my_org = prompton.orgs.get_current_user_org()
@@ -22,3 +29,9 @@ def show_header():
             if logout_submitted:
                 st.session_state["auth_token"] = None
                 st.experimental_rerun()
+
+
+def show_sidebar():
+    with st.sidebar:
+        choose = option_menu("PromptOn", ["Inferences", "Prompts"], default_index=0)
+        st.session_state["nav_selection"] = choose

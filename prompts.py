@@ -12,9 +12,8 @@ import auth
 import header
 import prompt_selector
 
-if auth.login():
-    header.show_header()
 
+def show():
     prompton = auth.get_prompton()
 
     prompt, prompt_version = prompt_selector.select_prompt_version()
@@ -99,7 +98,7 @@ if auth.login():
                     update_params["name"] = new_pv_name
 
                 if new_pv_template != template_formatted:
-                    update_params["template"] = new_pv_template_obj  # type: ignore
+                    update_params["template"] = new_pv_template_obj
 
                 if new_pv_model_config != model_config_formatted:
                     update_params["model_config"] = new_pv_model_config_obj

@@ -19,6 +19,9 @@ def login():
     if "auth_token" not in st.session_state:
         st.session_state["auth_token"] = None
 
+    if "nav_selection" not in st.session_state:
+        st.session_state["nav_selection"] = None
+
     if st.session_state["auth_token"]:
         return True
     else:

@@ -10,6 +10,7 @@ readme = "README.md"
 python = ">=3.10"
 streamlit = "^1.23.1"
 prompton = "^0.0.4"
+streamlit-option-menu = "^0.3.6"
 
 
 [build-system]

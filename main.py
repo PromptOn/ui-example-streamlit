@@ -1,20 +1,12 @@
 import streamlit as st
 
-import auth
-import header
-import prompt_selector
+import auth, header, inferences, prompts
 
 
 if auth.login():
-    header.show_header()
+    header.show()
 
-    prompton = auth.get_prompton()
-
-    prompt, prompt_version = prompt_selector.select_prompt_version()
-
-    if prompt_version and prompt_version.id:
-        inferences = prompton.inferences.get_inferences_list(
-            prompt_version_id=prompt_version.id
-        )
-        st.write("## Inferences")
-        st.write(inferences)
+    if st.session_state["nav_selection"] == "Inferences":
+        inferences.show()
+    elif st.session_state["nav_selection"] == "Prompts":
+        prompts.show()
