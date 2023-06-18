@@ -1,7 +1,8 @@
 from typing import Tuple
 import streamlit as st
-from prompton import types as prompton_types
+from streamlit_extras.no_default_selectbox import selectbox as no_default_selectbox
 
+from prompton import types as prompton_types
 import auth
 
 
@@ -14,11 +15,18 @@ def select_prompt_version() -> (
     with st.spinner("Loading prompts..."):
         my_prompts = prompton.prompts.get_prompts_list()
 
-        selected_prompt = col1.selectbox(
-            "Prompt", my_prompts, format_func=lambda o: o.name
-        )
+        with col1:
+            selected_prompt = no_default_selectbox(
+                "Prompt",
+                my_prompts,
+                format_func=lambda o: o if type(o) == str else o.name,
+                no_selection_label="<Select a prompt>",
+            )
 
         def format_prompt_version_fn(o: prompton_types.PromptVersionRead):
+            if type(o) == str:
+                return o
+
             pv_string = f"{o.name} - {o.status.value if o.status else ''} "
             if o.model_config:
                 pv_string += (
@@ -31,11 +39,13 @@ def select_prompt_version() -> (
                 my_prompt_versions = prompton.prompt_versions.get_prompt_versions_list(
                     prompt_id=selected_prompt.id
                 )
-                selected_pv = col2.selectbox(
-                    "version",
-                    my_prompt_versions,
-                    format_func=format_prompt_version_fn,
-                )
+                with col2:
+                    selected_pv = no_default_selectbox(
+                        "version",
+                        my_prompt_versions,
+                        format_func=format_prompt_version_fn,
+                        no_selection_label="<Select a version>",
+                    )
 
                 return selected_prompt, selected_pv
 

@@ -11,6 +11,7 @@ python = ">=3.10"
 streamlit = "^1.23.1"
 prompton = "^0.0.4"
 streamlit-option-menu = "^0.3.6"
+streamlit-extras = "^0.2.7"
 
 
 [build-system]
