@@ -11,11 +11,11 @@ def select_prompt_version() -> (
 ):
     prompton = auth.get_prompton()
 
-    col1, col2, _ = st.columns([1, 2, 1])
+    col_prompt, col_prompt_version, _ = st.columns([1, 2, 1])
     with st.spinner("Loading prompts..."):
         my_prompts = prompton.prompts.get_prompts_list()
 
-        with col1:
+        with col_prompt:
             selected_prompt = no_default_selectbox(
                 "Prompt",
                 my_prompts,
@@ -39,13 +39,16 @@ def select_prompt_version() -> (
                 my_prompt_versions = prompton.prompt_versions.get_prompt_versions_list(
                     prompt_id=selected_prompt.id
                 )
-                with col2:
+                with col_prompt_version:
                     selected_pv = no_default_selectbox(
                         "version",
                         my_prompt_versions,
                         format_func=format_prompt_version_fn,
                         no_selection_label="<Select a version>",
                     )
+
+                if selected_pv and selected_pv.id and selected_pv.description:
+                    col_prompt_version.markdown(f"_{selected_pv.description}_")
 
                 return selected_prompt, selected_pv
 

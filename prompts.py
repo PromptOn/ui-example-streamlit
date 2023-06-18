@@ -30,6 +30,10 @@ def show():
                 else template_default
             )
 
+            description_formatted = (
+                prompt_version.description if prompt_version.description else ""
+            )
+
             # \\n in json strings to \ followed by a literal new line
             template_formatted = re.sub(r"\\n", "\\\n", template_formatted)
 
@@ -45,6 +49,10 @@ def show():
 
             st.write("## Update prompt version")
             new_pv_name = st.text_input("Name", value=prompt_version.name)
+
+            new_pv_description = st.text_area(
+                "Description", value=description_formatted
+            )
 
             new_pv_status = st.selectbox(
                 # options=["Draft", "Testing", "Live", "Archived"],
@@ -104,6 +112,9 @@ def show():
                 if new_pv_status and new_pv_status != prompt_version.status:
                     update_params["status"] = new_pv_status
 
+                if new_pv_description != description_formatted:
+                    update_params["description"] = new_pv_description
+
                 if update_params == {}:
                     st.warning("Nothing to update")
                 else:
@@ -114,9 +125,9 @@ def show():
                             updated_pv = prompton.prompt_versions.update_prompt_version(
                                 prompt_version.id, **update_params
                             )
-
+                        update_params = {}
+                        # FIXME: there is an error when you update second time
                         st.success("Prompt version updated!")
-                        st.write(updated_pv)
 
                     except prompton_errors.UnauthorizedError as e:
                         st.error("😕 Login failed: " + str(e.body["detail"]))
