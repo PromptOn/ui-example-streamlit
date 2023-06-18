@@ -8,61 +8,13 @@ from prompton import errors as prompton_errors
 from prompton import types as prompton_types
 
 
-# prompton_env = "http://127.0.0.1:8000/"
-prompton_env = "https://staging.api.prompton.ai/"
+import auth
+import header
 
-st.set_page_config(layout="wide", page_title="Prompton API Example")
-prompton = prompton_client.PromptonApi(environment=prompton_env)
+if auth.login():
+    header.show_header()
 
-if "auth_token" not in st.session_state:
-    st.session_state["auth_token"] = None
-
-if not st.session_state["auth_token"]:
-    with st.form("Login"):
-        st.write("## Prompton Login ")
-        st.write(prompton_env)
-        email = st.text_input("email", key="email")
-        password = st.text_input("Password", type="password", key="password")
-
-        submitted = st.form_submit_button("Login")
-
-        if submitted:
-            try:
-                with st.spinner("Authenticating..."):
-                    token = prompton.authentication.get_access_token(
-                        username=email, password=password
-                    )
-
-                st.session_state["auth_token"] = token.access_token
-
-                st.experimental_rerun()
-
-            except prompton_errors.UnauthorizedError as e:
-                st.error("😕 Login failed: " + str(e.body["detail"]))
-            except prompton_errors.BadRequestError as e:
-                st.error("😕 Bad request: " + str(e.body))
-            except prompton_errors.UnprocessableEntityError as e:
-                st.error("😕 Unprocessable entity: " + str(e.body))
-
-            except Exception as e:
-                st.error("😕 Error while trying to login: " + str(e))
-
-if st.session_state["auth_token"]:
-    prompton = prompton_client.PromptonApi(
-        environment=prompton_env, token=st.session_state["auth_token"]
-    )
-
-    my_org = prompton.orgs.get_current_user_org()
-    my_user = prompton.users.get_current_user()
-    my_role = my_user.role.value if my_user.role else "No role"
-
-    st.write("# Prompts")
-    st.write(f"{my_user.email}  @  {my_org.name} ( { my_role} )")
-
-    logout_submitted = st.button("Logout")
-    if logout_submitted:
-        st.session_state["auth_token"] = None
-        st.experimental_rerun()
+    prompton = auth.get_prompton()
 
     with st.spinner("Loading prompts..."):
         my_prompts = prompton.prompts.get_prompts_list()
