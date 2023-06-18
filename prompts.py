@@ -16,7 +16,7 @@ def show():
 
     prompt, prompt_version = prompt_selector.select_prompt_version()
 
-    if prompt_version and prompt_version.id and prompt_version.status:
+    if prompt_version:
         with st.form("Update prompt version"):
             is_not_draft = prompt_version.status != "Draft"
             template_default = '[\n {"role": "system", "content": "string" },\n {"role": "user", "content": "" }\n]'
@@ -141,7 +141,7 @@ def show():
                             "😕 Error while trying to update prompt version: " + str(e)
                         )
 
-        if prompt and prompt.id:
+        if prompt:
             st.write("## Create new prompt version")
 
             with st.form("Create new prompt version"):

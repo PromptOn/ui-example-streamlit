@@ -34,7 +34,7 @@ def select_prompt_version() -> (
                 )
             return pv_string
 
-        if selected_prompt and selected_prompt.id:
+        if selected_prompt:
             with st.spinner("Loading versions..."):
                 my_prompt_versions = prompton.prompt_versions.get_prompt_versions_list(
                     prompt_id=selected_prompt.id
@@ -47,7 +47,7 @@ def select_prompt_version() -> (
                         no_selection_label="<Select a version>",
                     )
 
-                if selected_pv and selected_pv.id and selected_pv.description:
+                if selected_pv and selected_pv.description:
                     col_prompt_version.markdown(f"_{selected_pv.description}_")
 
                 return selected_prompt, selected_pv
