@@ -1,10 +1,10 @@
 import streamlit as st
 
-import auth, header, inferences, prompts
+import auth, layout, inferences, prompts
 
 
 if auth.login():
-    header.show()
+    layout.show()
 
     if st.session_state["nav_selection"] == "Inferences":
         inferences.show()

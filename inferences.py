@@ -1,7 +1,6 @@
 import streamlit as st
 
 import auth
-import header
 import prompt_selector
 
 

@@ -3,13 +3,11 @@ import re
 from typing import List
 import streamlit as st
 
-from prompton import client as prompton_client
 from prompton import errors as prompton_errors
 from prompton import types as prompton_types
 
 
 import auth
-import header
 import prompt_selector
 
 
