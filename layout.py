@@ -34,3 +34,13 @@ def show_sidebar():
             if logout_submitted:
                 st.session_state["auth_token"] = None
                 st.experimental_rerun()
+
+            st.divider()
+
+            repo_link = """
+            [![Repo](https://badgen.net/badge/icon/GitHub?icon=github&label)](https://github.com/PromptOn/prompton) 
+            """
+            st.markdown(repo_link, unsafe_allow_html=True)
+
+            st.write("## Design :lemon: Prize ")
+            st.write("Technical demo only")
