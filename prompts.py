@@ -19,15 +19,11 @@ def show():
     if prompt_version:
         with st.form("Update prompt version"):
             is_not_draft = prompt_version.status != "Draft"
-            template_default = '[\n {"role": "system", "content": "string" },\n {"role": "user", "content": "" }\n]'
-            model_config_default = (
-                '{ "model": "gpt-4", "temperature": 0.6, "max_tokens": 2000 }'
-            )
 
             template_formatted = (
                 json.dumps([i.dict() for i in prompt_version.template], indent=4)
                 if prompt_version.template
-                else template_default
+                else ""
             )
 
             description_formatted = (
@@ -40,7 +36,7 @@ def show():
             model_config_formatted = (
                 json.dumps(prompt_version.model_config.dict(), indent=4)
                 if prompt_version.model_config
-                else model_config_default
+                else ""
             )
 
             pv_status_names = [
@@ -66,6 +62,7 @@ def show():
                 value=template_formatted,
                 height=150,
                 disabled=is_not_draft,
+                placeholder='E.g.: [\n {"role": "system", "content": "string" },\n {"role": "user", "content": "" }\n]',
             )
 
             st.write(
@@ -81,6 +78,7 @@ def show():
             new_pv_model_config = st.text_area(
                 "Model config",
                 value=model_config_formatted,
+                placeholder='E.g.:\n { "model": "gpt-4", "temperature": 0.6, "max_tokens": 2000 }',
                 height=100,
                 disabled=is_not_draft,
             )
@@ -88,25 +86,27 @@ def show():
             submitted = st.form_submit_button("Update")
 
             if submitted:
-                new_pv_model_config_obj = prompton_types.ChatGptChatCompletitionConfig(
-                    **json.loads(new_pv_model_config)
-                )
-
-                # \ followed by literal new line to -> \\n for json parsing (for new lines in string values)
-                json_parsed = re.sub(r"\\\n", "\\\\n", new_pv_template)
-
-                new_pv_template_obj: List[prompton_types.ChatGptMessage] = [
-                    prompton_types.ChatGptMessage(**i) for i in json.loads(json_parsed)
-                ]
-
                 update_params = {}
                 if new_pv_name != prompt_version.name:
                     update_params["name"] = new_pv_name
 
                 if new_pv_template != template_formatted:
+                    # \ followed by literal new line to -> \\n for json parsing (for new lines in string values)
+                    template_json_parsed = re.sub(r"\\\n", "\\\\n", new_pv_template)
+
+                    new_pv_template_obj: List[prompton_types.ChatGptMessage] = [
+                        prompton_types.ChatGptMessage(**i)
+                        for i in json.loads(template_json_parsed)
+                    ]
+
                     update_params["template"] = new_pv_template_obj
 
                 if new_pv_model_config != model_config_formatted:
+                    new_pv_model_config_obj = (
+                        prompton_types.ChatGptChatCompletitionConfig(
+                            **json.loads(new_pv_model_config)
+                        )
+                    )
                     update_params["model_config"] = new_pv_model_config_obj
 
                 if new_pv_status and new_pv_status != prompt_version.status:
