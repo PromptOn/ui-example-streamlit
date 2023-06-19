@@ -2,6 +2,7 @@ import json
 import re
 from typing import List
 import streamlit as st
+from annotated_text import annotated_text
 
 from prompton import errors as prompton_errors
 from prompton import types as prompton_types
@@ -44,6 +45,8 @@ def show():
             ]
 
             st.write("## Update prompt version")
+
+            st.markdown(f"Id: `{prompt_version.id}`")
             new_pv_name = st.text_input("Name", value=prompt_version.name)
 
             new_pv_description = st.text_area(
@@ -65,14 +68,9 @@ def show():
                 placeholder='E.g.: [\n {"role": "system", "content": "string" },\n {"role": "user", "content": "" }\n]',
             )
 
-            st.write(
-                "Template args: ",
-                (
-                    (" , ").join(prompt_version.template_arg_names)
-                    if prompt_version.template_arg_names
-                    else ""
-                )
-                + " (only updated after reload yet)",
+            annotated_text(
+                "Template args:",
+                *[[(a, "", "#3d0f42"), " "] for a in prompt_version.template_arg_names],
             )
 
             new_pv_model_config = st.text_area(
