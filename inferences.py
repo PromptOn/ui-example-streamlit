@@ -2,6 +2,7 @@ import json
 import pytz
 import streamlit as st
 from datetime import datetime
+import pandas as pd
 
 import auth
 import prompt_selector
@@ -19,17 +20,17 @@ def show():
         )
         st.write(f"## Inferences ({len(inferences)})")
         for inf in inferences:
-            acol1, acol2 = st.columns([1, 5])
-            scol1, scol2 = st.columns([1, 5])
+            df = pd.DataFrame([inf.template_args]).T
+            style = df.style.hide(axis=1)
 
-            for arg, val in inf.template_args.items():
-                acol1.write(f"**{arg}:** ")
-                acol2.write(val)
+            st.write(style.to_html(header=False), unsafe_allow_html=True)
 
-            scol1.write("Response:")
+            st.markdown("#### Response")
 
             if not inf.response:
-                scol2.write("No response yet {inf.status.value}  id: {inf.id}}")
+                st.write(
+                    f"No response from {inf.request.provider} yet. Status: {inf.status.value}  id: {inf.id}"
+                )
 
             else:
                 if isinstance(inf.response, prompton_types.InferenceResponseData):
@@ -37,20 +38,20 @@ def show():
                     try:
                         json_response = json.loads(resp)
                         if type(json_response) == dict:
-                            scol2.json(json_response, expanded=False)
+                            st.json(json_response, expanded=False)
                         else:
                             raise json.JSONDecodeError(
                                 "response is Not a dict", "message.content", 0
                             )
 
                     except json.JSONDecodeError as e:  # json.JSONDecodeError:
-                        scol2.write(resp)
+                        st.write(resp)
 
                 elif isinstance(inf.response, prompton_types.InferenceResponseError):
-                    scol1.write("Response Error:")
-                    scol2.write(inf.status)
+                    st.write("#### Response Error:")
+                    st.write(inf.status)
                 else:
-                    scol1.write(f"Unknown response type for inference {inf.id}")
+                    st.write(f"Unknown response type for inference {inf.id}")
 
                 with st.expander(f" Details "):
                     created_at = datetime.fromisoformat(inf.created_at).astimezone(
@@ -64,4 +65,4 @@ def show():
 
                     st.json(inf.dict(), expanded=False)
 
-                st.divider()
+            st.divider()
