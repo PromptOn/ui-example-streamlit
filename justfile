@@ -7,4 +7,4 @@ install:
   poetry install
   
 run:
-  poetry run streamlit run main.py
+  poetry run streamlit run Home.py

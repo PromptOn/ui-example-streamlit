@@ -4,21 +4,30 @@ import streamlit as st
 from datetime import datetime
 import pandas as pd
 
-import auth
-import prompt_selector
 from prompton import types as prompton_types
 
+import utils.prompton_helpers as prompton_helpers
+import components.login as login
+import components.layout as layout
+import components.prompt_selector as prompt_selector
 
-def show():
-    prompton = auth.get_prompton()
+layout.show_layout()
+
+if login.login():
+    prompton = prompton_helpers.get_prompton()
 
     prompt, prompt_version = prompt_selector.select_prompt_version()
 
     if prompt_version:
-        inferences = prompton.inferences.get_inferences_list(
-            prompt_version_id=prompt_version.id
-        )
+        inferences = prompton_helpers.get_inferences(prompt_version.id)
         st.write(f"## Inferences ({len(inferences)})")
+
+        refresh_button = st.button("Refresh")
+
+        if refresh_button:
+            prompton_helpers.get_inferences.clear()  # type: ignore
+            st.experimental_rerun()
+
         for inf in inferences:
             df = pd.DataFrame([inf.template_args]).T
             style = df.style.hide(axis=1)

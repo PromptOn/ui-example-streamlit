@@ -2,19 +2,13 @@ import streamlit as st
 from prompton import errors as prompton_errors
 from prompton import client as prompton_client
 
+from utils.prompton_helpers import get_prompton
+
 PROMPTON_ENVS = [
     "https://staging.api.prompton.ai",
     "http://127.0.0.1:8000",
     "https://api.prompton.ai",
 ]
-
-
-def get_prompton():
-    prompton_api = prompton_client.PromptonApi(
-        environment=st.session_state["prompton_env"],
-        token=st.session_state["auth_token"],
-    )
-    return prompton_api
 
 
 def login():
@@ -27,11 +21,17 @@ def login():
     if "prompton_env" not in st.session_state:
         st.session_state["prompton_env"] = None
 
+    if "current_user" not in st.session_state:
+        st.session_state["current_user"] = None
+
+    if "current_org" not in st.session_state:
+        st.session_state["current_org"] = None
+
     if st.session_state["auth_token"]:
         return True
     else:
         with st.form("Login"):
-            st.write("## Prompton Login ")
+            st.write("### Login ")
             prompton_env = st.selectbox("Environment", PROMPTON_ENVS)
 
             st.session_state["prompton_env"] = prompton_env
@@ -50,7 +50,17 @@ def login():
                             username=email, password=password
                         )
 
-                    st.session_state["auth_token"] = token.access_token
+                        st.session_state["auth_token"] = token.access_token
+
+                        prompton = get_prompton()
+
+                        st.session_state[
+                            "current_user"
+                        ] = prompton.users.get_current_user()
+
+                        st.session_state[
+                            "current_org"
+                        ] = prompton.orgs.get_current_user_org()
 
                     st.experimental_rerun()
 

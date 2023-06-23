@@ -1,19 +1,22 @@
 import json
 import re
-from typing import List
+from typing import Any, List
 import streamlit as st
 from annotated_text import annotated_text
 
 from prompton import errors as prompton_errors
 from prompton import types as prompton_types
 
+import utils.prompton_helpers as prompton_helpers
+import components.login as login
+import components.layout as layout
+import components.prompt_selector as prompt_selector
 
-import auth
-import prompt_selector
 
+layout.show_layout()
 
-def show():
-    prompton = auth.get_prompton()
+if login.login():
+    prompton = prompton_helpers.get_prompton()
 
     prompt, prompt_version = prompt_selector.select_prompt_version()
 
@@ -69,8 +72,11 @@ def show():
             )
 
             annotated_text(
-                "Template args:",
-                *[[(a, "", "#3d0f42"), " "] for a in prompt_version.template_arg_names],
+                "Template args: ",
+                *[
+                    [(a, "", "#3d0f42", "#fff"), " "]
+                    for a in prompt_version.template_arg_names
+                ],
             )
 
             new_pv_model_config = st.text_area(
@@ -84,7 +90,9 @@ def show():
             submitted = st.form_submit_button("Update")
 
             if submitted:
-                update_params = {}
+                # TODO: PromptVersionUpdate schema should be exposed via SDK
+                update_params: dict[str, Any] = {}
+
                 if new_pv_name != prompt_version.name:
                     update_params["name"] = new_pv_name
 
@@ -139,41 +147,41 @@ def show():
                             "😕 Error while trying to update prompt version: " + str(e)
                         )
 
-        if prompt:
-            st.write("## Create new prompt version")
+    if prompt:
+        st.write("## Create new prompt version")
 
-            with st.form("Create new prompt version"):
-                st.write(f"Prompt:  {prompt.name} - {prompt.id}")
-                _ = st.text_input("Provider", value="OpenAI", disabled=True)
-                _ = st.text_input("Status", value="Draft", disabled=True)
-                new_pv_name = st.text_input("New prompt version name")
-                submitted = st.form_submit_button("Create")
+        with st.form("Create new prompt version"):
+            st.write(f"Prompt:  {prompt.name} - {prompt.id}")
+            _ = st.text_input("Provider", value="OpenAI", disabled=True)
+            _ = st.text_input("Status", value="Draft", disabled=True)
+            new_pv_name = st.text_input("New prompt version name")
+            submitted = st.form_submit_button("Create")
 
-                if submitted:
-                    try:
-                        with st.spinner("Creating new prompt version..."):
-                            new_pv = prompton.prompt_versions.add_prompt_version(
-                                prompt_id=prompt.id, name=new_pv_name
-                            )
-
-                        st.success(
-                            "Prompt version created. Refresh below to see (sorry)"
-                        )
-                        st.write(new_pv)
-
-                    except prompton_errors.UnauthorizedError as e:
-                        st.error("😕 Login failed: " + str(e.body["detail"]))
-                    except prompton_errors.BadRequestError as e:
-                        st.error("😕 Bad request: " + str(e.body))
-                    except prompton_errors.UnprocessableEntityError as e:
-                        st.error("😕 Unprocessable entity: " + str(e.body))
-
-                    except Exception as e:
-                        st.error(
-                            "😕 Error while trying to create prompt version: " + str(e)
+            if submitted:
+                try:
+                    with st.spinner("Creating new prompt version..."):
+                        new_pv = prompton.prompt_versions.add_prompt_version(
+                            prompt_id=prompt.id, name=new_pv_name
                         )
 
-            refresh_button = st.button("Refresh")
+                    prompton_helpers.get_prompt_versions.clear()  # type: ignore
+                    st.success(
+                        "Prompt version created. Click refresh below to update versions dropdown (sorry)"
+                    )
 
-            if refresh_button:
-                st.experimental_rerun()
+                    st.write(new_pv)
+
+                except prompton_errors.UnauthorizedError as e:
+                    st.error("😕 Login failed: " + str(e.body["detail"]))
+                except prompton_errors.BadRequestError as e:
+                    st.error("😕 Bad request: " + str(e.body))
+                except prompton_errors.UnprocessableEntityError as e:
+                    st.error("😕 Unprocessable entity: " + str(e.body))
+
+                except Exception as e:
+                    st.error("😕 Error while trying to create prompt version: " + str(e))
+
+        refresh_button = st.button("Refresh")
+
+        if refresh_button:
+            prompt_selector.refresh_prompt_versions()
