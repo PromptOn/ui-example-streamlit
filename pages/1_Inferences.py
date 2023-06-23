@@ -11,7 +11,7 @@ import components.login as login
 import components.layout as layout
 import components.prompt_selector as prompt_selector
 
-layout.show_layout()
+layout.show_layout("Inferences")
 
 if login.login():
     prompton = prompton_helpers.get_prompton()
