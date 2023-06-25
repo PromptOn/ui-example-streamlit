@@ -85,8 +85,8 @@ def select_prompt_version() -> (
                     st.session_state["selected_prompt_version"]
                     and st.session_state["selected_prompt_version"].description
                 ):
-                    col_prompt_version.markdown(
-                        f'_{st.session_state["selected_prompt_version"].description}_'
+                    col_prompt_version.caption(
+                        f'{st.session_state["selected_prompt_version"].description}'
                     )
 
                 return (
