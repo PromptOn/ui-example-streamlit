@@ -18,11 +18,6 @@ if login.login():
             st.write(f"## My feedbacks ({len(my_feedbacks)})")
             st.write(f"Prompt version: {prompt_version.name}  `{prompt_version.id}`")
 
-            refresh_button = st.button("Refresh")
-            if refresh_button:
-                prompton_helpers.get_my_feedbacks.clear()  # type: ignore
-                st.experimental_rerun()
-
             if len(my_feedbacks) == 0:
                 st.write(f'No feedback from {st.session_state["current_user"].email}')
             else:
@@ -44,3 +39,8 @@ if login.login():
                         ]
                     ]
                 )
+
+        refresh_button = st.button("Refresh")
+        if refresh_button:
+            prompton_helpers.get_my_feedbacks.clear()  # type: ignore
+            st.experimental_rerun()
