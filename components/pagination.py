@@ -24,5 +24,5 @@ def show_paginator(data_length: int, key: str | None = None):
     selected_idx: int = pagination_component(
         data_length + 1, layout=pagination_layout, key=key
     )
-    print("selected_idx", selected_idx)
+
     return selected_idx
