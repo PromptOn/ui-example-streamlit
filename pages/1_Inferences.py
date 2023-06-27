@@ -20,43 +20,47 @@ if login.login():
     if prompt_version:
         inferences = prompton_helpers.get_inferences(prompt_version.id)
 
-        current_idx = pagination.show_paginator(len(inferences))
-
-        inf = inferences[current_idx]
-
-        st.markdown("#### Input")
-        st.write(inf.template_args)
-
-        st.markdown("#### Response")
-
-        if not inf.response:
-            st.write(
-                f"No response from {inf.request.provider} yet. Status: {inf.status.value}  id: {inf.id}"
-            )
+        if len(inferences) == 0:
+            st.info(f"No inferences for this prompt version id: `{prompt_version.id}`")
 
         else:
-            if isinstance(inf.response, prompton_types.InferenceResponseData):
-                resp = inf.response.raw_response.choices[0].message.content
-                try:
-                    json_response = json.loads(resp)
-                    if type(json_response) == dict:
-                        st.json(json_response, expanded=True)
-                    else:
-                        raise json.JSONDecodeError(
-                            "response is Not a dict", "message.content", 0
-                        )
+            current_idx = pagination.show_paginator(len(inferences))
 
-                except json.JSONDecodeError as e:  # json.JSONDecodeError:
-                    st.write(resp)
+            inf = inferences[current_idx]
 
-            elif isinstance(inf.response, prompton_types.InferenceResponseError):
-                st.write("#### Response Error:")
-                st.write(inf.status)
+            st.markdown("#### Input")
+            st.write(inf.template_args)
+
+            st.markdown("#### Response")
+
+            if not inf.response:
+                st.write(
+                    f"No response from {inf.request.provider} yet. Status: {inf.status.value}  id: {inf.id}"
+                )
+
             else:
-                st.write(f"Unknown response type for inference {inf.id}")
+                if isinstance(inf.response, prompton_types.InferenceResponseData):
+                    resp = inf.response.raw_response.choices[0].message.content
+                    try:
+                        json_response = json.loads(resp)
+                        if type(json_response) == dict:
+                            st.json(json_response, expanded=True)
+                        else:
+                            raise json.JSONDecodeError(
+                                "response is Not a dict", "message.content", 0
+                            )
 
-            with st.expander(f" Details "):
-                inference_details.show_details(inf)
+                    except json.JSONDecodeError as e:  # json.JSONDecodeError:
+                        st.write(resp)
+
+                elif isinstance(inf.response, prompton_types.InferenceResponseError):
+                    st.write("#### Response Error:")
+                    st.write(inf.status)
+                else:
+                    st.write(f"Unknown response type for inference {inf.id}")
+
+                with st.expander(f" Details "):
+                    inference_details.show_details(inf)
 
         st.divider()
 
