@@ -99,7 +99,7 @@ def show_form(
                     )
                 st.write(raw_model_resp)
 
-            rcol1, rcol2 = st.columns([1, 1])
+            rcol1, rcol2 = st.columns([10, 9])
             with rcol1:
                 _ = rating_component(part_idx)
 
