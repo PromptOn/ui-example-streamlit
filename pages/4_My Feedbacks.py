@@ -19,7 +19,7 @@ if login.login():
             st.write(f"Prompt version: {prompt_version.name}  `{prompt_version.id}`")
 
             if len(my_feedbacks) == 0:
-                st.write(f'No feedback from {st.session_state["current_user"].email}')
+                st.info(f'No feedback from {st.session_state["current_user"].email}')
             else:
                 df_feedbacks = pd.DataFrame([f.dict() for f in my_feedbacks])
                 df_feedbacks["created_at"] = df_feedbacks["created_at"].apply(
