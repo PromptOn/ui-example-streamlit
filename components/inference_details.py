@@ -24,7 +24,7 @@ def show_details(inf: prompton_types.InferenceRead):
     )
 
     st.write(
-        f"`{inf.status.value}` in `{compl_duration}` secs - total tokens: `{total_tokens}` - `{created_at_str}`"
+        f"`{inf.status.value}` in `{compl_duration}` secs | total tokens: `{total_tokens}` | `{created_at_str}` | prompt version: `{inf.prompt_version_id}`"
     )
 
     st.json(inf.dict(), expanded=False)
@@ -54,3 +54,10 @@ def show_args(template_args: Dict[str, str], highlight_args: List[str] = []):
             st.write(args_detail)
             # for key, val in args_detail.items():
             #     st.markdown(f"**{key}**<br>{val}", unsafe_allow_html=True)
+
+
+def show_model_response(response: str):
+    st.markdown(
+        """<div class="model-response">""" + response + "</div>",
+        unsafe_allow_html=True,
+    )

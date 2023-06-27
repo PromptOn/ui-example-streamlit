@@ -10,4 +10,7 @@ def show_layout(page_title: str | None = None):
 
     st.set_page_config(layout="wide", page_title=_page_title, page_icon=":lemon:")
 
+    style = open("./styles.css").read()
+    st.markdown(f"""<style>{style}</style>""", unsafe_allow_html=True)
+
     show_sidebar()

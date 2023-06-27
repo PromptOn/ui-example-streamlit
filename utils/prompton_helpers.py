@@ -18,9 +18,21 @@ def get_prompton():
 
 
 @st.cache_data(ttl="1d")
-def get_prompt_versions(prompt_id: str):
+def get_prompt_version_list(prompt_id: str):
     prompton = login.get_prompton()
     return prompton.prompt_versions.get_prompt_versions_list(prompt_id=prompt_id)
+
+
+@st.cache_data(ttl="1d")
+def get_prompt_version_by_id(prompt_version_id: str):
+    prompton = login.get_prompton()
+    return prompton.prompt_versions.get_prompt_version_by_id(id=prompt_version_id)
+
+
+@st.cache_data(ttl="1d")
+def get_prompt_by_id(prompt_id: str):
+    prompton = login.get_prompton()
+    return prompton.prompts.get_prompt_by_id(id=prompt_id)
 
 
 @st.cache_data(ttl="1d")
@@ -86,7 +98,10 @@ def get_inference_parts_to_evaluate(
                     inf.id == fb.inference_id
                     and fb.feedback_for_part in parts_to_evaluate
                 ):
-                    parts_not_evaluated.remove(fb.feedback_for_part)
+                    try:
+                        parts_not_evaluated.remove(fb.feedback_for_part)
+                    except ValueError:
+                        pass
 
             if len(parts_not_evaluated) > 0:
                 inferences_to_eval.append((inf.response, parts_not_evaluated, inf))

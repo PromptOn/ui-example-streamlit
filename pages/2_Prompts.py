@@ -164,7 +164,7 @@ if login.login():
                             prompt_id=prompt.id, name=new_pv_name
                         )
 
-                    prompton_helpers.get_prompt_versions.clear()  # type: ignore
+                    prompton_helpers.get_prompt_version_list.clear()  # type: ignore
                     st.success(
                         "Prompt version created. Click refresh below to update versions dropdown (sorry)"
                     )
