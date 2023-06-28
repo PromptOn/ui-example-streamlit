@@ -6,8 +6,6 @@ from tzlocal import get_localzone
 from prompton import client as prompton_client
 from prompton import types as prompton_types
 
-import utils.prompton_helpers as login
-
 
 def get_prompton():
     prompton_api = prompton_client.PromptonApi(
@@ -19,25 +17,25 @@ def get_prompton():
 
 @st.cache_data(ttl="1d")
 def get_prompt_version_list(prompt_id: str):
-    prompton = login.get_prompton()
+    prompton = get_prompton()
     return prompton.prompt_versions.get_prompt_versions_list(prompt_id=prompt_id)
 
 
 @st.cache_data(ttl="1d")
 def get_prompt_version_by_id(prompt_version_id: str):
-    prompton = login.get_prompton()
+    prompton = get_prompton()
     return prompton.prompt_versions.get_prompt_version_by_id(id=prompt_version_id)
 
 
 @st.cache_data(ttl="1d")
 def get_prompt_by_id(prompt_id: str):
-    prompton = login.get_prompton()
+    prompton = get_prompton()
     return prompton.prompts.get_prompt_by_id(id=prompt_id)
 
 
 @st.cache_data(ttl="1d")
 def get_prompts():
-    prompton = login.get_prompton()
+    prompton = get_prompton()
     return prompton.prompts.get_prompts_list()
 
 
