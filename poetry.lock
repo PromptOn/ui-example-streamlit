@@ -1937,6 +1937,20 @@ files = [
 ]
 
 [[package]]
+name = "types-tzlocal"
+version = "5.0.1.0"
+description = "Typing stubs for tzlocal"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-tzlocal-5.0.1.0.tar.gz", hash = "sha256:b7e09ca8dd2f17b2d45cc98e2e6124c3634e3fb52138a44c5d612cb4dfe8c695"},
+    {file = "types_tzlocal-5.0.1.0-py3-none-any.whl", hash = "sha256:4e9a156c84b50b495a983b17167f704da818b8679bed5381f35b2132bec97ca4"},
+]
+
+[package.dependencies]
+types-pytz = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.6.3"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -2066,4 +2080,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10"
-content-hash = "419e8e7d3daf058eb213fe7fca69a78befea16fccedad2f935b66ebb881cf4b5"
+content-hash = "4689feb34e7c74d7854f32888a405be5c7df064bc923acd4da3c32fe6ae5cd18"
