@@ -1817,20 +1817,6 @@ files = [
 streamlit = ">=0.63"
 
 [[package]]
-name = "streamlit-pagination"
-version = "0.0.3"
-description = ""
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "streamlit-pagination-0.0.3.tar.gz", hash = "sha256:9b8e671956c0fa3a118cd43dea0a39138acde1b4c470d0b0c612b8509a00a59f"},
-    {file = "streamlit_pagination-0.0.3-py3-none-any.whl", hash = "sha256:57b3527d58a919a3f3370cc9ac66c27da7f326c03a14b50a0573d17326553170"},
-]
-
-[package.dependencies]
-streamlit = ">=0.63"
-
-[[package]]
 name = "streamlit-toggle-switch"
 version = "1.0.2"
 description = "Creates a customizable toggle"
@@ -2080,4 +2066,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10"
-content-hash = "4689feb34e7c74d7854f32888a405be5c7df064bc923acd4da3c32fe6ae5cd18"
+content-hash = "02fe7a40fe336511561046ea4e1f17b3f68a1e70c0839acc8b3ed2d63b38b509"

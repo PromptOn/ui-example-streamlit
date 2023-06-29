@@ -13,7 +13,6 @@ prompton = "0.0.7"
 streamlit-option-menu = "^0.3.6"
 streamlit-extras = "^0.2.7"
 streamlit-antd-components = "^0.1.6"
-streamlit-pagination = "^0.0.3"
 
 
 [build-system]

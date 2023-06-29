@@ -6,7 +6,6 @@ from prompton import types as prompton_types
 import utils.prompton_helpers as prompton_helpers
 import components.login as login
 import components.layout as layout
-import components.pagination as pagination
 import components.inference_details as inference_details
 import components.prompt_selector as prompt_selector
 
@@ -24,9 +23,19 @@ if login.login():
             st.info(f"No inferences for this prompt version id: `{prompt_version.id}`")
 
         else:
-            current_idx = pagination.show_paginator(len(inferences))
+            col1, col2 = st.columns([1, 8])
+            current_idx = col1.selectbox(
+                label="Inference",
+                label_visibility="collapsed",
+                options=list(range(1, len(inferences) + 1)),
+                key="selectbox_inference_idx",
+            )
+            col2.write(f"/{len(inferences)}")
 
-            inf = inferences[current_idx]
+            if current_idx is None:
+                current_idx = 1
+
+            inf = inferences[current_idx - 1]
 
             st.markdown("#### Input")
             st.write(inf.template_args)
