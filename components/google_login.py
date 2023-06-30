@@ -39,7 +39,7 @@ def show_google_login():
             )
 
             st.markdown(
-                f"""<a href="{prompton_env}/oauth/login?{login_query_params}" target="_parent">
+                f"""<a href="{prompton_env}/oauth/login?{login_query_params}" target="_blank">
                 <input type="button" value="Google Login" /></a>""",
                 unsafe_allow_html=True,
             )
