@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, cast
 import streamlit as st
 from streamlit_extras.no_default_selectbox import selectbox as no_default_selectbox
 
@@ -108,22 +108,28 @@ def select_prompt_version() -> (
                     st.session_state["selected_prompt_version"] = selected_pv
 
                     if selected_pv is not None and selected_pv.id:
+                        selected_pv = cast(
+                            prompton_types.PromptVersionRead, selected_pv
+                        )
                         query_params = {
                             **query_params,
                             "prompt_version_id": selected_pv.id,
                         }
+
+                        with col_prompt_version.expander(
+                            "Prompt version details", expanded=False
+                        ):
+                            if selected_pv.description:
+                                st.caption("version notes: " + selected_pv.description)
+
+                            st.write("Template:")
+                            for idx, msg in enumerate(selected_pv.template):
+                                st.write(msg.content)
+
                     elif "prompt_version_id" in query_params:
                         del query_params["prompt_version_id"]
 
                     st.experimental_set_query_params(**query_params)
-
-                if (
-                    st.session_state["selected_prompt_version"]
-                    and st.session_state["selected_prompt_version"].description
-                ):
-                    col_prompt_version.caption(
-                        f'{st.session_state["selected_prompt_version"].description}'
-                    )
 
                 return (
                     st.session_state["selected_prompt"],
