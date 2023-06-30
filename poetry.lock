@@ -1788,6 +1788,20 @@ jinja2 = "*"
 streamlit = ">=1.2"
 
 [[package]]
+name = "streamlit-javascript"
+version = "0.1.5"
+description = "component to run javascript code in streamlit application"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "streamlit-javascript-0.1.5.tar.gz", hash = "sha256:9da5176522a0acf2c39d3b0bec9f856fdd8ea3c70bb1066841a546ab1348ae1d"},
+    {file = "streamlit_javascript-0.1.5-py3-none-any.whl", hash = "sha256:36ca4d8c46fd5b6526d1a705530472e03cb6e5bb24694330649f21d5c436d280"},
+]
+
+[package.dependencies]
+streamlit = ">=0.75"
+
+[[package]]
 name = "streamlit-keyup"
 version = "0.2.0"
 description = "Text input that renders on keyup"
@@ -2066,4 +2080,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10"
-content-hash = "082cfcdc5dcd2101634f1d4d7f06a88c806bf49cb141d917366c9a3128783881"
+content-hash = "63dc7dffcbed9752c85019d6ef0c6124d45c056cd58796b476adfbd20f8658f5"
