@@ -22,7 +22,6 @@ def login():
     query_params = st.experimental_get_query_params()
 
     if "prompton_env" in query_params and query_params["prompton_env"][0] is not None:
-        print("login query_params: ", query_params)
         st.session_state["prompton_env"] = query_params["prompton_env"][0]
         del query_params["prompton_env"]
         st.experimental_set_query_params(**query_params)
@@ -34,7 +33,6 @@ def login():
         st.session_state["nav_selection"] = None
 
     if "prompton_env" not in st.session_state:
-        print("no prompton_env in session_state")
         st.session_state["prompton_env"] = PROMPTON_ENVS[0]
 
     if "current_user" not in st.session_state:

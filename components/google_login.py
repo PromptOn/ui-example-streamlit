@@ -38,10 +38,6 @@ def show_google_login():
                 doseq=True,
             )
 
-            if headers:
-                print("Headers.origin & host", headers["Origin"], headers["Host"])
-            print(login_query_params)
-
             st.markdown(
                 f"""<a href="{prompton_env}/oauth/login?{login_query_params}" target="_self">
                 <input type="button" value="Google Login" /></a>""",
