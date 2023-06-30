@@ -1,4 +1,5 @@
 import json
+import dirtyjson
 import streamlit as st
 
 from prompton import types as prompton_types
@@ -51,7 +52,12 @@ if login.login():
                             )
 
                     except json.JSONDecodeError as e:  # json.JSONDecodeError:
-                        st.write(resp)
+                        try:
+                            fixed_json = dirtyjson.loads(resp)
+                            st.warning(f"Non standard JSON response repaired")
+                            st.write(fixed_json)
+                        except dirtyjson.Error:
+                            st.write(resp)
 
                 elif isinstance(inf.response, prompton_types.InferenceResponseError):
                     st.write("#### Response Error:")

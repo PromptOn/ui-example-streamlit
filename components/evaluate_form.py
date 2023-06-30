@@ -9,6 +9,7 @@ from prompton import types as prompton_types
 from prompton import errors as prompton_errors
 
 from streamlit_antd_components import buttons
+import dirtyjson
 
 import components.inference_details as inference_details
 
@@ -65,40 +66,45 @@ def show_form(
         reset_form(st.session_state["save_success_parts"])
 
     with st.form(key="feedback_form"):
+        raw_model_resp = inf_resp.raw_response.choices[0].message.content
+        json_response = None
+        try:
+            json_response = json.loads(raw_model_resp)
+
+        except json.JSONDecodeError as e:
+            try:
+                json_response = dict(dirtyjson.loads(raw_model_resp))
+                st.warning(f"Note: Response is non standard JSON response. Repaired")
+
+            except dirtyjson.Error:
+                if len(parts) > 1 or (len(parts) == 1 and parts[0] is not None):
+                    st.warning(
+                        f"Response is not valid JSON can't extract `{parts}`, showing full response"
+                    )
+
         for part_idx, part in enumerate(parts):
             if len(parts) > 1:
                 st.write(f"#### `{part if part else 'Overall'}`")
 
-            raw_model_resp = inf_resp.raw_response.choices[0].message.content
+            if json_response is None:
+                inference_details.show_model_response(raw_model_resp)
 
-            try:
-                json_response = json.loads(raw_model_resp)
-
-                if type(json_response) == dict and json_response.get(part):
-                    if type(json_response[part]) == str:
-                        inference_details.show_model_response(
-                            json_response[part]
-                            .replace("\\n", "<br/>")
-                            .replace("\n", "<br/>")
-                        )
-
-                    else:
-                        st.json(json_response[part], expanded=True)
-
-                else:
-                    if part is not None:
-                        st.warning(
-                            f"{part} not found in response, showing full response"
-                        )
-                    st.json(json_response, expanded=True)
-
-            except json.JSONDecodeError as e:
-                if part is not None:
-                    st.warning(
-                        f"Response is not valid JSON can't extract `{part}`, showing full response"
+            elif type(json_response) == dict and json_response.get(part):
+                if type(json_response[part]) == str:
+                    inference_details.show_model_response(
+                        json_response[part]
+                        .replace("\\n", "<br/>")
+                        .replace("\n", "<br/>")
                     )
-                st.write(raw_model_resp)
+                else:
+                    st.json(json_response[part], expanded=True)
+            else:
+                print("json_response", json_response)
+                st.write(json_response)
 
+            #
+            #  Rating components
+            #
             rcol1, rcol2 = st.columns([10, 9])
             with rcol1:
                 _ = rating_component(part_idx)
