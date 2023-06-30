@@ -30,9 +30,6 @@ if _parts is not None:
 highlight_args = query_params.get("highlight_arg", [])
 
 
-if "current_page_idx" not in st.session_state:
-    st.session_state["current_page_idx"] = 0
-
 if login.login():
     prompt, prompt_version = prompt_selector.select_prompt_version()
 
@@ -52,18 +49,12 @@ if login.login():
                 )
 
             else:
-                # st.session_state["current_page_idx"] = pagination.show_paginator(
-                #     len(to_eval)
-                # )
+                current_idx = pagination.show_paginator(
+                    len(to_eval), "selectbox_current_idx"
+                )
 
-                inf_resp, parts, full_inf = to_eval[
-                    st.session_state["current_page_idx"]
-                ]
+                inf_resp, parts, full_inf = to_eval[current_idx]
 
-                # st.write(
-                #     f'### Input {st.session_state["current_page_idx"] + 1} / {len(to_eval)}'
-                # )
-                #
                 st.write(f"### Evaluate")
 
                 inference_details.show_args(full_inf.template_args, highlight_args)
@@ -71,8 +62,7 @@ if login.login():
                 _ = evaluate_form.show_form(full_inf.id, inf_resp, parts)
 
                 st.markdown(
-                    f" {len(to_eval)} more to finish\t<a href='#linkto_top'>Scroll to top</a>",
-                    unsafe_allow_html=True,
+                    f"<a href='#linkto_top'>Scroll to top</a>", unsafe_allow_html=True
                 )
 
                 st.divider()

@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_pagination import pagination_component
 
 # this is https://mui.com/material-ui/react-pagination/ component
 pagination_layout = {
@@ -8,21 +7,19 @@ pagination_layout = {
 }
 
 
-def show_paginator(data_length: int, key: str | None = None):
-    st.markdown(
-        """
-    <style>
-        iframe {
-            height: 50px;
-            width: 500px;
-        }     
-    </style>
-    """,
-        unsafe_allow_html=True,
+def show_paginator(data_length: int, key: str | None = None) -> int:
+    col1, col2 = st.columns([1, 8])
+
+    current_idx = col1.selectbox(
+        label="Inference",
+        label_visibility="collapsed",
+        options=list(range(1, data_length + 1)),
+        key=key,
     )
 
-    selected_idx: int = pagination_component(
-        data_length + 1, layout=pagination_layout, key=key
-    )
+    col2.write(f"/{data_length}")
 
-    return selected_idx
+    if current_idx is None:
+        current_idx = 0
+
+    return current_idx - 1
