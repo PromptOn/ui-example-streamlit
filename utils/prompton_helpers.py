@@ -15,6 +15,15 @@ def get_prompton():
     return prompton_api
 
 
+def load_user(access_token: str):
+    st.session_state["auth_token"] = access_token
+
+    prompton = get_prompton()
+
+    st.session_state["current_user"] = prompton.users.get_current_user()
+    st.session_state["current_org"] = prompton.orgs.get_current_user_org()
+
+
 @st.cache_data(ttl="1d")
 def get_prompt_version_list(prompt_id: str):
     prompton = get_prompton()

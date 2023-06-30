@@ -1,17 +1,32 @@
+import httpx
 import streamlit as st
 from prompton import errors as prompton_errors
 from prompton import client as prompton_client
 
-from utils.prompton_helpers import get_prompton
+from utils.prompton_helpers import load_user
+from components.google_login import show_google_login
+
 
 PROMPTON_ENVS = [
     "https://staging.api.prompton.ai",
-    "http://127.0.0.1:8000",
+    "http://localhost:8000",
     "https://api.prompton.ai",
 ]
 
 
+def on_selectbox_prompton_env():
+    st.session_state["prompton_env"] = st.session_state["selectbox_prompton_env"]
+
+
 def login():
+    query_params = st.experimental_get_query_params()
+
+    if "prompton_env" in query_params and query_params["prompton_env"][0] is not None:
+        print("login query_params: ", query_params)
+        st.session_state["prompton_env"] = query_params["prompton_env"][0]
+        del query_params["prompton_env"]
+        st.experimental_set_query_params(**query_params)
+
     if "auth_token" not in st.session_state:
         st.session_state["auth_token"] = None
 
@@ -19,7 +34,8 @@ def login():
         st.session_state["nav_selection"] = None
 
     if "prompton_env" not in st.session_state:
-        st.session_state["prompton_env"] = None
+        print("no prompton_env in session_state")
+        st.session_state["prompton_env"] = PROMPTON_ENVS[0]
 
     if "current_user" not in st.session_state:
         st.session_state["current_user"] = None
@@ -30,12 +46,22 @@ def login():
     if st.session_state["auth_token"]:
         return True
     else:
+        st.write("### Login ")
+
+        prompton_env = st.selectbox(
+            "Environment",
+            PROMPTON_ENVS,
+            index=PROMPTON_ENVS.index(st.session_state["prompton_env"]),
+            key="selectbox_prompton_env",
+            on_change=on_selectbox_prompton_env,
+        )
+
+        show_google_login()
+
+        st.write("")
+        st.write("or")
+
         with st.form("Login"):
-            st.write("### Login ")
-            prompton_env = st.selectbox("Environment", PROMPTON_ENVS)
-
-            st.session_state["prompton_env"] = prompton_env
-
             email = st.text_input("email", key="email")
             password = st.text_input("Password", type="password", key="password")
 
@@ -50,17 +76,7 @@ def login():
                             username=email, password=password
                         )
 
-                        st.session_state["auth_token"] = token.access_token
-
-                        prompton = get_prompton()
-
-                        st.session_state[
-                            "current_user"
-                        ] = prompton.users.get_current_user()
-
-                        st.session_state[
-                            "current_org"
-                        ] = prompton.orgs.get_current_user_org()
+                        load_user(token.access_token)
 
                     st.experimental_rerun()
 
