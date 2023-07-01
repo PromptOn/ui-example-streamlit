@@ -1,5 +1,5 @@
+from html import escape
 import json
-import random
 import streamlit as st
 from typing import OrderedDict, List, cast
 from dataclasses import dataclass
@@ -36,22 +36,34 @@ def reset_form(parts: List[str | None]):
 
 
 def rating_component(part_idx: int):
-    score = buttons(
-        [
-            dict(label="", icon="question-circle", type="link"),
-            dict(label="Bad", icon="exclamation-triangle"),
-            dict(label="So-so", icon="hand-thumbs-down"),
-            dict(label="Good", icon="hand-thumbs-up"),
-            dict(label="Excellent", icon="stars"),
-        ],
-        align="center",
-        shape="round",
-        grow=False,
-        key="score_" + str(part_idx),
-        return_index=True,
-        compact=True,
+    rcol1, rcol2 = st.columns([10, 9])
+
+    with rcol1:
+        score = buttons(
+            [
+                dict(label="", icon="question-circle", type="link"),
+                dict(label="Bad", icon="exclamation-triangle"),
+                dict(label="So-so", icon="hand-thumbs-down"),
+                dict(label="Good", icon="hand-thumbs-up"),
+                dict(label="Excellent", icon="stars"),
+            ],
+            align="center",
+            shape="round",
+            grow=False,
+            key="score_" + str(part_idx),
+            return_index=True,
+            compact=True,
+        )
+        st.session_state["score_" + str(part_idx)] = score
+
+    # _ = st.session_state.get("note_" + str(part_idx))
+    _ = rcol2.text_area(
+        "Note",
+        label_visibility="collapsed",
+        key="note_" + str(part_idx),
+        placeholder=f"Optional comment",
+        height=80,
     )
-    st.session_state["score_" + str(part_idx)] = score
 
     return score
 
@@ -74,49 +86,44 @@ def show_form(
         except json.JSONDecodeError as e:
             try:
                 json_response = dict(dirtyjson.loads(raw_model_resp))
-                st.warning(f"Note: Response is non standard JSON response. Repaired")
+                st.info(f"Note: Response is non standard JSON response. Repaired")
 
             except dirtyjson.Error:
-                if len(parts) > 1 or (len(parts) == 1 and parts[0] is not None):
-                    st.warning(
-                        f"Response is not valid JSON can't extract `{parts}`, showing full response"
-                    )
+                pass
 
-        for part_idx, part in enumerate(parts):
-            if len(parts) > 1:
-                st.write(f"#### `{part if part else 'Overall'}`")
+        if json_response is None or type(json_response) != dict:
+            if len(parts) > 1 or (len(parts) == 1 and parts[0] is not None):
+                st.warning(
+                    f"Response is not valid JSON. Can't extract `{parts}`. Showing full response"
+                )
 
-            if json_response is None:
-                inference_details.show_model_response(raw_model_resp)
+            inference_details.show_model_response(raw_model_resp)
+            rating_component(0)
 
-            elif type(json_response) == dict and json_response.get(part):
-                if type(json_response[part]) == str:
+        else:
+            for part_idx, part in enumerate(parts):
+                if len(parts) > 1:
+                    st.write(f"#### `{part if part else 'Overall'}`")
+
+                resp_to_display = json_response.get(part) if part else json_response
+
+                if type(resp_to_display) == dict:
+                    st.json(resp_to_display, expanded=True)
+                    rating_component(part_idx)
+
+                elif type(resp_to_display) == str:
                     inference_details.show_model_response(
-                        json_response[part]
+                        escape(resp_to_display)
                         .replace("\\n", "<br/>")
                         .replace("\n", "<br/>")
                     )
+                    rating_component(part_idx)
+
+                elif part is None:
+                    rating_component(part_idx)
+
                 else:
-                    st.json(json_response[part], expanded=True)
-            else:
-                print("json_response", json_response)
-                st.write(json_response)
-
-            #
-            #  Rating components
-            #
-            rcol1, rcol2 = st.columns([10, 9])
-            with rcol1:
-                _ = rating_component(part_idx)
-
-            note = st.session_state.get("note_" + str(part_idx))
-            _ = rcol2.text_area(
-                "Note",
-                label_visibility="collapsed",
-                key="note_" + str(part_idx),
-                placeholder=f"Optional comment about {part}...",
-                height=80,
-            )
+                    st.warning(f"Response does not contain `{part}`")
 
         submitted = st.form_submit_button("Submit & Next", type="primary")
 

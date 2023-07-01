@@ -9,7 +9,7 @@ def step_idx(key, step: int):
 
 
 def show_paginator(data_length: int, key: str) -> int:
-    col1, col2, col3, col4 = st.columns([1, 2, 1, 32])
+    col1, col2, col3, col4 = st.columns([1, 2, 1, 8])
 
     if key not in st.session_state:
         st.session_state[key] = 1
